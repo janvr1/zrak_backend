@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<h1>Devices for user "{{username}}"</h1>
+<table>
+    <tr>
+        <th>id</th>
+        <th>user_id</th>
+        <th>name</th>
+        <th>location</th>
+        <th>var0</th>
+        <th>var1</th>
+        <th>var2</th>
+        <th>var3</th>
+        <th>var4</th>
+        <th>var5</th>
+        <th>var6</th>
+        <th>var7</th>
+        <th>var8</th>
+        <th>var9</th>
+        <th>actions</th>
+    </tr>
+    {% for device in devices %}
+    <tr>
+        <td>{{device['id']}}</td>
+        <td>{{device['user_id']}}</td>
+        <td>{{device['name']}}</td>
+        <td>{{device['location']}}</td>
+        <td>{{device['var0']}}</td>
+        <td>{{device['var1']}}</td>
+        <td>{{device['var2']}}</td>
+        <td>{{device['var3']}}</td>
+        <td>{{device['var4']}}</td>
+        <td>{{device['var5']}}</td>
+        <td>{{device['var6']}}</td>
+        <td>{{device['var7']}}</td>
+        <td>{{device['var8']}}</td>
+        <td>{{device['var9']}}</td>
+        <td><a href="{{ url_for('manage.measurements_view', dev_id=device['id']) }}">Measurements</a>
+            <a href="{{ url_for('manage.measurements_view', dev_id=device['id']) }}">Edit</a>
+            <a href="{{ url_for('manage.delete_device', dev_id=device['id'], user_id=device['user_id']) }}">Remove</a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>

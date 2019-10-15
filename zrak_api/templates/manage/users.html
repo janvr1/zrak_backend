@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<h1>All users</h1>
+<table>
+    <tr>
+        <th>id</th>
+        <th>username</th>
+        <th>email</th>
+        <th>user_type</th>
+        <th>actions</th>
+    </tr>
+    {% for user in users %}
+    <tr>
+        <td>{{user['id']}}</td>
+        <td>{{user['username']}}</td>
+        <td>{{user['email']}}</td>
+        <td>{{user['user_type']}}</td>
+        <td><a href="{{ url_for('manage.devices_view', user_id=user['id']) }}">Devices</a>
+            <a href="{{ url_for('manage.devices_view', user_id=user['id']) }}">Edit</a>
+            <a href="{{ url_for('manage.delete_user', user_id=user['id']) }}">Remove</a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<h1>Measurements for user "{{username}}" device "{{dev_name}}"</h1>
+<table>
+    <tr>
+        <th>id</th>
+        <th>dev_id</th>
+        <th>time</th>
+        {% for variable in variables.values() %}
+        <th>{{variable}}</th>
+        {% endfor %}
+        <th>action</th>
+    </tr>
+    {% for measurement in measurements %}
+    <tr>
+        <td>{{measurement['id']}}</td>
+        <td>{{measurement['dev_id']}}</td>
+        <td>{{measurement['time']}}</td>
+        {% for variable in variables.keys() %}
+        <td>{{measurement[variable]}}</td>
+        {% endfor %}
+        <td><a href="{{url_for('manage.delete_measurement', dev_id=measurement['dev_id'], meas_id=measurement['id'])}}"/>Remove</a></td>
+    </tr>
+    {% endfor %}
+</table>
