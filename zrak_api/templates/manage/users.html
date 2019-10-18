@@ -1,9 +1,14 @@
-<!DOCTYPE html>
-<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-<h1>All users</h1>
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Users overview{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
 <table>
     <tr>
         <th>id</th>
+        <th>time_created</th>
         <th>username</th>
         <th>email</th>
         <th>user_type</th>
@@ -12,6 +17,7 @@
     {% for user in users %}
     <tr>
         <td>{{user['id']}}</td>
+        <td>{{user['time_created']}}</td>
         <td>{{user['username']}}</td>
         <td>{{user['email']}}</td>
         <td>{{user['user_type']}}</td>
@@ -22,3 +28,4 @@
     </tr>
     {% endfor %}
 </table>
+{% endblock %}

@@ -24,18 +24,15 @@ def init_db():
     db = get_db()
     with current_app.open_resource('schema.sql') as f:
         db.executescript(f.read().decode('utf8'))
+    pass_hash = generate_password_hash("admin")
+    sql_cmd = "INSERT INTO users(username, password, user_type) VALUES(?, ?, ?)"
+    db.execute(sql_cmd, ("admin", pass_hash, 1))
+    db.commit()
 
 @click.command('init-db')
 @with_appcontext
 def init_db_command():
     """Clear the existing data and create new tables"""
-    db = get_db()
-    tables = db.execute("SELECT name FROM sqlite_master WHERE type='table'").fetchall()
-    db.execute("PRAGMA foreign_keys = OFF")
-    for table in tables:
-        db.execute(f"DROP TABLE {table['name']}")
-    db.execute("PRAGMA foreign_key = ON")
-    db.commit()
     init_db()
     click.echo("Initialized the database")
 
@@ -49,19 +46,34 @@ def new_user(username, password, email=None):
     db = get_db()
     password_hash = generate_password_hash(password)
     sql_cmd = "INSERT INTO users(username, password, email) VALUES(?, ?, ?)"
-    try:
-        db.execute(sql_cmd, (username, password_hash, email))
-    finally:
-        db.commit()
+    cursor = db.execute(sql_cmd, (username, password_hash, email))
+    db.commit()
+    return cursor.lastrowid
+
+
+def edit_user(user_id, username=None, password=None, email=None):
+    db = get_db()
+    if username is not None:
+        sql_cmd = "UPDATE users SET username=? WHERE id=?"
+        db.execute(sql_cmd, (username, user_id))
+    if password is not None:
+        sql_cmd = "UPDATE users SET password=? WHERE id=?"
+        password_hash = generate_password_hash(password)
+        db.execute(sql_cmd, (password_hash, user_id))
+    if email is not None:
+        sql_cmd = "UPDATE users SET email=? WHERE id=?"
+        db.execute(sql_cmd, (email, user_id))
+    db.commit()
+
 
 def delete_user(user_id):
     db = get_db()
-    delete_devices_for_user(user_id)
+    #delete_devices_for_user(user_id)
     sql_cmd = "DELETE FROM users WHERE id=?"
     db.execute(sql_cmd, (user_id, ))
     db.commit()
 
-def get_user(id=None, username=None):
+def get_user(id=None, username=None, email=None):
     db = get_db()
     if id is not None:
         sql_cmd = "SELECT * FROM users WHERE id=?"
@@ -69,6 +81,9 @@ def get_user(id=None, username=None):
     if username is not None:
         sql_cmd = "SELECT * FROM users WHERE username=?"
         return db.execute(sql_cmd, (username, )).fetchone()
+    if email is not None:
+        sql_cmd = "SELECT * FROM users WHERE email=?"
+        return db.execute(sql_cmd, (email, )).fetchone()
 
 def get_all_users():
     db = get_db()
@@ -112,16 +127,29 @@ def new_device(user_id, dev_name, dev_location=None, variable_list=None):
     for i, var in enumerate(variable_list):
         var_list[i] = var
     sql_cmd = "INSERT INTO devices(name, location, user_id, var0, var1, var2, var3, var4, var5, var6, var7, var8, var9) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
-    try:
-        db.execute(sql_cmd, (dev_name, dev_location, user_id, *var_list))
-    # except sqlite3.IntegrityError:
-    #     raise sqlite3.IntegrityError
-    finally:
-        db.commit()
+    cursor = db.execute(sql_cmd, (dev_name, dev_location, user_id, *var_list))
+    db.commit()
+    return cursor.lastrowid
+
+def edit_device(dev_id, dev_name=None, dev_loc=None, variable_list=None):
+    db = get_db()
+    if dev_name is not None:
+        sql_cmd = "UPDATE devices SET name=? WHERE id=?"
+        db.execute(sql_cmd, (dev_name, dev_id))
+    if dev_loc is not None:
+        sql_cmd = "UPDATE devices SET location=? WHERE id=?"
+        db.execute(sql_cmd, (dev_loc, dev_id))
+    if variable_list is not None:
+        var_list = [None]*10
+        for i, var in enumerate(variable_list):
+            var_list[i] = var
+        sql_cmd = "UPDATE devices SET var0=?, var1=?, var2=?, var3=?, var4=?, var5=?, var6=?, var7=?, var8=?, var9=? WHERE id=?"
+        db.execute(sql_cmd, (*var_list, dev_id))
+    db.commit()
 
 def delete_device(dev_id):
     db = get_db()
-    delete_measurements_for_device(dev_id)
+    #delete_measurements_for_device(dev_id)
     sql_cmd = "DELETE FROM devices WHERE id=?"
     db.execute(sql_cmd, (dev_id,))
     db.commit()
@@ -161,6 +189,7 @@ def new_measurement(dev_id, data):
         sql_cmd = f"UPDATE measurements SET {var_key}=? WHERE id=?"
         db.execute(sql_cmd, (data[var_name], row_id))
     db.commit()
+    return row_id
 
 def get_measurement(meas_id=None, dev_id=None, time=None):
     db = get_db()
@@ -175,12 +204,6 @@ def delete_measurement(meas_id):
     db = get_db()
     sql_cmd = "DELETE FROM measurements WHERE id=?"
     db.execute(sql_cmd, (meas_id, ))
-    db.commit()
-
-def delete_measurements_for_device(dev_id):
-    db = get_db()
-    sql_cmd = "DELETE FROM measurements WHERE dev_id=?"
-    db.execute(sql_cmd, (dev_id, ))
     db.commit()
 
 def get_last_n_measurements(dev_id, n):
@@ -206,11 +229,20 @@ def check_if_user_exists(username):
         return True
     return False
 
-def check_if_device_exists(dev_name, user_id):
-    device = get_device(dev_name = dev_name, user_id=user_id).fetchone()
-    if device is not None:
+def check_if_email_exists(email):
+    if get_user(email=email) is not None:
         return True
     return False
+
+def check_if_device_exists(dev_name=None, user_id=None, dev_id=None):
+    if (dev_name is not None) and (user_id is not None):
+        if get_device(dev_name = dev_name, user_id=user_id) is not None:
+            return True
+        return False
+    if dev_id is not None:
+        if get_device(dev_id) is not None:
+            return True
+        return False
 
 def check_password(username, password):
     user = get_user(username=username)
@@ -252,3 +284,9 @@ def delete_devices_for_user(user_id):
         dev_id = device['id']
         delete_measurements_for_device(dev_id)
         delete_device(dev_id)
+
+def delete_measurements_for_device(dev_id):
+    db = get_db()
+    sql_cmd = "DELETE FROM measurements WHERE dev_id=?"
+    db.execute(sql_cmd, (dev_id, ))
+    db.commit()

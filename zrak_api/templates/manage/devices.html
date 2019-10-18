@@ -1,10 +1,15 @@
-<!DOCTYPE html>
-<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-<h1>Devices for user "{{username}}"</h1>
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Devices for user "{{username}}"{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
 <table>
     <tr>
         <th>id</th>
         <th>user_id</th>
+        <th>time_created</th>
         <th>name</th>
         <th>location</th>
         <th>var0</th>
@@ -23,6 +28,7 @@
     <tr>
         <td>{{device['id']}}</td>
         <td>{{device['user_id']}}</td>
+        <td>{{device['time_created']}}</td>
         <td>{{device['name']}}</td>
         <td>{{device['location']}}</td>
         <td>{{device['var0']}}</td>
@@ -42,3 +48,4 @@
     </tr>
     {% endfor %}
 </table>
+{% endblock %}

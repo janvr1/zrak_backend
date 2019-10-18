@@ -1,6 +1,9 @@
-<!DOCTYPE html>
-<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-<h1>Measurements for user "{{username}}" device "{{dev_name}}"</h1>
+{% extends 'base.html' %}
+{% block header %}
+<h1> {% block title %} Measurements for user "{{username}}" device "{{dev_name}}" {% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
 <table>
     <tr>
         <th>id</th>
@@ -23,3 +26,4 @@
     </tr>
     {% endfor %}
 </table>
+{% endblock %}

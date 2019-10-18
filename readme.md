@@ -1,8 +1,8 @@
 ## To-do (backend):
-* dodaj date_created v users in devices tabelo
 * data resampling
-* porihtaj management interface
 * nginx server
+* GET request za measurements
+* dodaj edit v management
 
 ## To-do (ostalo):
 * web client (Vue.js?)

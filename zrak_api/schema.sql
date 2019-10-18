@@ -7,12 +7,14 @@ CREATE TABLE users (
     user_type INTEGER NOT NULL DEFAULT 0,
     username VARCHAR(255) NOT NULL UNIQUE,
     email VARCHAR(255) DEFAULT NULL UNIQUE,
+    time_created DATETIME DEFAULT CURRENT_TIMESTAMP,
     password TEXT NOT NULL
 );
 
 CREATE TABLE devices (
     id INTEGER PRIMARY KEY,
     user_id INTEGER NOT NULL,
+    time_created DATETIME DEFAULT CURRENT_TIMESTAMP,
     name VARCHAR(255) NOT NULL,
     location VARCHAR(255) DEFAULT NULL,
     var0 VARCHAR(255) DEFAULT NULL,
@@ -25,7 +27,7 @@ CREATE TABLE devices (
     var7 VARCHAR(255) DEFAULT NULL,
     var8 VARCHAR(255) DEFAULT NULL,
     var9 VARCHAR(255) DEFAULT NULL,
-    FOREIGN KEY(user_id) REFERENCES users(id),
+    FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE,
     UNIQUE (user_id, name)
 );
 
@@ -43,5 +45,5 @@ CREATE TABLE measurements (
     var7 REAL DEFAULT NULL,
     var8 REAL DEFAULT NULL,
     var9 REAL DEFAULT NULL,
-    FOREIGN KEY(dev_id) REFERENCES devices(id)
+    FOREIGN KEY(dev_id) REFERENCES devices(id) ON DELETE CASCADE
 );
