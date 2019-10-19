@@ -43,7 +43,7 @@ def edit_user(user_id):
         if user_type != '':
             user_type = int(user_type)
             if (user_type < 0) or (user_type>1):
-                flash("user_type can only be 0 (ordinary user) or 1 (admin)")
+                flash("User type can only be 0 (ordinary user) or 1 (admin)")
                 return redirect(url_for('manage.edit_user', user_id=user_id))
         else:
             user_type = None
@@ -88,7 +88,7 @@ def edit_device(dev_id):
         if variables != '':
             var_list = [var.strip() for var in variables.split(',')]
         else:
-            variables = None
+            var_list = None
 
         db.edit_device(dev_id, dev_name, dev_loc, var_list)
         return redirect(url_for('manage.devices_view', user_id=user['id']))
