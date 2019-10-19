@@ -1,15 +1,34 @@
 <!doctype html>
-<h1>Log In</h1>
+
+<style>
+    h1, table {
+      font-family: Arial, sans-serif;
+    }
+    </style>
+<h1 style="text-align: center;">Zrak_backend management interface</h1>
 <form method="post">
-  <label for="username">Username</label>
-  <input name="username" id="username" required>
-</br>
-  <label for="password">Password</label>
-  <input type="password" name="password" id="password" required>
-  <input type="submit" value="Log In">
+  <table style="margin-left: auto;margin-right: auto;">
+    <tr align="center">
+      <td><label for="username">Username</label></td>
+    </tr>
+    <tr align="center">
+      <td><input name="username" id="username" required></td>
+    </tr>
+    <tr align="center">
+      <td><label for="password">Password</label></td>
+    </tr>
+    <tr align="center">
+      <td><input type="password" name="password" id="password" required></td>
+    </tr>
+    <tr align="center">
+      <td><input type="submit" value="Log In"></td>
+    </tr>
+    <tr align="center">
+      <td>
+          {% for message in get_flashed_messages() %}
+            <div class="flash" style="color: red;">{{ message }}</div>
+          {% endfor %}
+      </td>
+    </tr>
+  </table>
 </form>
-<section>
-  {% for message in get_flashed_messages() %}
-    <div class="flash">{{ message }}</div>
-  {% endfor %}
-</section>

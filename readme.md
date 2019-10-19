@@ -1,8 +1,6 @@
 ## To-do (backend):
 * data resampling
 * nginx server
-* GET request za measurements
-* dodaj edit v management
 
 ## To-do (ostalo):
 * web client (Vue.js?)

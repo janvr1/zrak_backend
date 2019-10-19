@@ -1,6 +1,6 @@
 from flask import request, Blueprint, jsonify, abort
 from . import db
-import json
+import simplejson as json
 
 bp = Blueprint('api', __name__, url_prefix='/api')
 
@@ -129,7 +129,7 @@ def devices_api():
             dev_loc = req_data['device_location']
         else:
             dev_loc = None
-        
+
         if db.check_if_device_exists(dev_name, user_id): abort(409, "Error: Device name already exists")
 
         db.edit_device(dev_id, dev_name, dev_loc, variables)
@@ -184,6 +184,9 @@ def measurements_api():
     if request.method == 'POST':
         if not request.is_json: return err_json
         req_data = request.get_json()
+        var_list = db.get_device_var_list(dev_id)
+        for var in req_data.keys():
+            if var not in var_list: abort(400, f"Error: Variable '{var}' does not exist for device '{dev_name}'")
         meas_id = db.new_measurement(dev_id, req_data)
         measurement = db.get_measurement(meas_id)
         meas_json = get_meas_json(meas_id)
@@ -195,7 +198,12 @@ def measurements_api():
         return f"Success: Measurement successfully deleted for device '{dev_name}', user '{username}'"
 
     if request.method == 'GET':
-        pass
+        measurements = db.get_measurements(dev_id, start, stop, lim)
+        measurements_dict = {}
+        key_to_name_dict = db.var_key_to_name_dict(dev_id)
+        for idx, meas in enumerate(measurements):
+            measurements_dict[idx] = get_meas_json(meas['id'], key_to_name_dict)
+        return jsonify(measurements_dict), 200
 
 ### HELPER functions
 
@@ -214,9 +222,12 @@ def get_dev_json(dev_id):
         dev_dict[key] = device[key]
     return dev_dict
 
-def get_meas_json(meas_id):
+def get_meas_json(meas_id, key_to_name):
     meas = db.get_measurement(meas_id)
     meas_dict = {}
     for key in meas.keys():
+        if key.startswith('var'): continue
         meas_dict[key] = meas[key]
+    for key in key_to_name.keys():
+        meas_dict[key_to_name[key]] = meas[key]
     return meas_dict

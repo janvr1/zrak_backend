@@ -4,10 +4,14 @@ table {
   width: fit-content;
 }
 
+h1, body, nav {
+  font-family: airal, sans-serif;
+}
+
 td, th {
   border: 1px solid #777777;
-  text-align: left;
   padding: 8px;
+  text-align: left;
 }
 
 tr:nth-child(even) {

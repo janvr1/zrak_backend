@@ -1,4 +1,5 @@
 import os
+import subprocess
 from flask import Flask
 from . import db, api, auth, manage
 
@@ -21,8 +22,13 @@ def create_app(test_config=None):
     def greeting():
         return "Watcha doin here?"
 
+    app.jinja_env.globals.update(uptime=uptime)
+
     db.init_app(app)
     app.register_blueprint(api.bp)
     app.register_blueprint(auth.bp)
     app.register_blueprint(manage.bp)
     return app
+
+def uptime():
+    return subprocess.run(['uptime'], stdout=subprocess.PIPE).stdout.decode('utf-8').strip()

@@ -1,26 +1,26 @@
 <!doctype html>
 <title>{% block title %}{% endblock %} - Zrak_backend</title>
-<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 
 <nav>
     {% if g.user %}
-    <span style="float: left;">
-    <a href="javascript:history.back()">Back</a>
-    <a href="{{url_for('manage.users_view')}}">Home</a>
-    </span>
-    <span style="float: right;">
-    Username: {{ g.user['username'] }}
-    <a href="{{ url_for('auth.logout') }}">Log Out</a>
-    </span>
-    </br>
+    <table style="width: 100%;">
+    <th style="width: 15%; border:none">
+      <a href="javascript:history.back()">Back</a>
+      <a href="{{url_for('manage.users_view')}}">Home</a>
+    </th>
+    <th style="text-align: center; width: 70%; border: none;">
+      {{ uptime() }}
+    </th>
+    <th style="text-align: right; width: 15%; border: none;">
+      Username: {{ g.user['username'] }}
+      <a href="{{ url_for('auth.logout') }}">Log Out</a>
+    </th>
+    </table>
     {% endif %}
 </nav>
 <section class="content">
   <header>
     {% block header %}{% endblock %}
   </header>
-  {% for message in get_flashed_messages() %}
-    <div class="flash">{{ message }}</div>
-  {% endfor %}
   {% block content %}{% endblock %}
 </section>

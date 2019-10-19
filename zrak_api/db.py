@@ -51,7 +51,7 @@ def new_user(username, password, email=None):
     return cursor.lastrowid
 
 
-def edit_user(user_id, username=None, password=None, email=None):
+def edit_user(user_id, username=None, password=None, email=None, user_type=None):
     db = get_db()
     if username is not None:
         sql_cmd = "UPDATE users SET username=? WHERE id=?"
@@ -63,6 +63,9 @@ def edit_user(user_id, username=None, password=None, email=None):
     if email is not None:
         sql_cmd = "UPDATE users SET email=? WHERE id=?"
         db.execute(sql_cmd, (email, user_id))
+    if user_type is not None:
+        sql_cmd = "UPDATE users SET user_type=? WHERE id=?"
+        db.execute(sql_cmd, (user_type, user_id))
     db.commit()
 
 
@@ -200,6 +203,11 @@ def get_measurement(meas_id=None, dev_id=None, time=None):
         sql_cmd = "SELECT * FROM measurements WHERE dev_id=? AND time=?"
         return db.execute(sql_cmd, (dev_id, time)).fetchone()
 
+def get_all_measurements(dev_id):
+    db = get_db()
+    sql_cmd = "SELECT * FROM measurements WHERE dev_id=?"
+    return db.execute(sql_cmd, (dev_id, )).fetchall()
+
 def delete_measurement(meas_id):
     db = get_db()
     sql_cmd = "DELETE FROM measurements WHERE id=?"
@@ -221,6 +229,15 @@ def delete_measurements_range(dev_id, time_start, time_stop):
     sql_cmd = "DELETE FROM measurements WHERE dev_id=? AND time>=? AND time<=?"
     db.execute(sql_cmd, (dev_id, time_start, time_stop))
     db.commit()
+
+def get_measurements(dev_id, start=None, stop=None, lim=None):
+    db = get_db()
+    if lim is None: lim=-1
+    if start is None: start='-1'
+    if stop is None: stop='3000-01-01 00:00:00'
+    sql_cmd = "SELECT * FROM measurements WHERE dev_id=? AND time>=? AND time<=? ORDER BY time DESC LIMIT ?"
+    measurements = db.execute(sql_cmd, (dev_id, start, stop, lim)).fetchall()
+    return measurements
 
 
 ### HELPER functions
@@ -290,3 +307,10 @@ def delete_measurements_for_device(dev_id):
     sql_cmd = "DELETE FROM measurements WHERE dev_id=?"
     db.execute(sql_cmd, (dev_id, ))
     db.commit()
+
+def get_device_var_list(dev_id):
+    db = get_db()
+    sql_cmd = "SELECT var0, var1, var2, var3, var4, var5, var6, var7, var8, var9 FROM devices WHERE id=?"
+    variables = db.execute(sql_cmd, (dev_id, )).fetchone()
+    var_list = [variables[key] for key in variables.keys() if variables[key] is not None]
+    return var_list
