@@ -1,6 +1,5 @@
 from flask import request, Blueprint, jsonify, abort
 from . import db
-import simplejson as json
 
 bp = Blueprint('api', __name__, url_prefix='/api')
 
