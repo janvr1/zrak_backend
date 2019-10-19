@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1 style="text-align: center;">{% block title %}Edit device "{{device['name']}}" for user "{{username}}"{% endblock %}</h1>
+{% endblock %}
+<link rel="stylesheet" href="{{ url_for('static', filename='style2.css') }}">
+
+{% block content %}
+<form method="post">
+    <table style="margin-left: auto;margin-right: auto;">
+        <tr>
+            <td style="text-align: center !important;"><label for="dev_name">Device name</label></td>
+        </tr>
+        <tr>
+            <td style="text-align: center;"><input name="dev_name" id="dev_name"></td>
+        </tr>
+        <tr align="center">
+            <td><label for="dev_loc">Device location</label></td>
+        </tr>
+        <tr align="center">
+            <td><input name="dev_loc" id="dev_loc"></td>
+        </tr>
+        <tr align="center">
+            <td><label for="vars">Variables</label></td>
+        </tr>
+        <tr align="center">
+            <td><input name="vars" id="vars"></td>
+        </tr>
+        <tr align="center">
+            <td><input type="submit" value="Submit"></td>
+        </tr>
+        <tr align="center">
+            <td>
+                {% for message in get_flashed_messages() %}
+                <div class="flash" style="color: red;">{{ message }}</div>
+                {% endfor %}
+            </td>
+        </tr>
+    </table>
+</form>
+{% endblock %}

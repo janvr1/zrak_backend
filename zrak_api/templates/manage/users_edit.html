@@ -1,0 +1,41 @@
+<link rel="stylesheet" href="{{ url_for('static', filename='style2.css') }}">
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1 style="text-align: center;">{% block title %}Edit user "{{user['username']}}"{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+<form method="post">
+        <table style="margin-left: auto;margin-right: auto;">
+          <tr align="center">
+            <td><label for="username">Username</label></td>
+          </tr>
+          <tr align="center">
+            <td><input name="username" id="username"></td>
+          </tr>
+          <tr align="center">
+            <td><label for="email">Email</label></td>
+          </tr>
+          <tr align="center">
+            <td><input name="email" id="email"></td>
+          </tr>
+          <tr align="center">
+                <td><label for="user_type">user_type</label></td>
+              </tr>
+              <tr align="center">
+                <td><input name="user_type" id="user_type" type="number"></td>
+              </tr>
+          <tr>
+            <td align="center"><input type="submit" value="Submit"></td>
+          </tr>
+          <tr align="center">
+            <td>
+                {% for message in get_flashed_messages() %}
+                  <div class="flash" style="color: red;">{{ message }}</div>
+                {% endfor %}
+            </td>
+          </tr>
+        </table>
+      </form>
+{% endblock %}
