@@ -1,5 +1,6 @@
 from flask import request, Blueprint, jsonify, abort
 from . import db
+import datetime as dt
 
 bp = Blueprint('api', __name__, url_prefix='/api')
 
@@ -181,7 +182,7 @@ def measurements_api():
     dev_id = db.get_dev_id(dev_name, username)
 
     if request.method == 'POST':
-        if not request.is_json: return err_json
+        if not request.is_json: return err_json, 400
         req_data = request.get_json()
         var_list = db.get_device_var_list(dev_id)
         for var in req_data.keys():
@@ -193,10 +194,16 @@ def measurements_api():
     
     if request.method == 'DELETE':
         if meas_id is None: abort(400, "Error: Measurement ID not provided")
+        if not db.check_if_measurement_exists(meas_id): abort(404, "Error: Measurement ID does not exist")
         db.delete_measurement(meas_id)
         return f"Success: Measurement successfully deleted for device '{dev_name}', user '{username}'"
 
     if request.method == 'GET':
+        if start is not None:
+            start = dt.datetime.strptime(start, "%Y%m%dT%H%M%S").strftime("%Y-%m-%d %H:%M:%S")
+        if stop is not None:
+            stop = dt.datetime.strptime(stop, "%Y%m%dT%H%M%S").strftime("%Y-%m-%d %H:%M:%S")
+
         measurements = db.get_measurements(dev_id, start, stop, lim)
         measurements_dict = {}
         key_to_name_dict = db.var_key_to_name_dict(dev_id)

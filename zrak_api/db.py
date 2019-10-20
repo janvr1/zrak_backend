@@ -314,3 +314,8 @@ def get_device_var_list(dev_id):
     variables = db.execute(sql_cmd, (dev_id, )).fetchone()
     var_list = [variables[key] for key in variables.keys() if variables[key] is not None]
     return var_list
+
+def check_if_measurement_exists(meas_id):
+    if get_measurement(meas_id) is not None:
+        return True
+    return False
