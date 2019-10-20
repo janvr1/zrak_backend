@@ -189,7 +189,8 @@ def measurements_api():
             if var not in var_list: abort(400, f"Error: Variable '{var}' does not exist for device '{dev_name}'")
         meas_id = db.new_measurement(dev_id, req_data)
         measurement = db.get_measurement(meas_id)
-        meas_json = get_meas_json(meas_id)
+        key_to_name_dict = db.var_key_to_name_dict(dev_id)
+        meas_json = get_meas_json(meas_id, key_to_name_dict)
         return jsonify(meas_json), 200
     
     if request.method == 'DELETE':
