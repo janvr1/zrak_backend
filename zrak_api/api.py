@@ -2,7 +2,7 @@ from flask import request, Blueprint, jsonify, abort
 from . import db
 import datetime as dt
 
-bp = Blueprint('api', __name__, url_prefix='/api')
+bp = Blueprint('api', __name__)
 
 
 err_json = "Error: Request was not JSON"
