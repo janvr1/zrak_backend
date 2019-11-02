@@ -12,7 +12,7 @@ err_user_not_exists = "Error: Username does not exist"
 err_email_exists = "Error: Email already exists"
 err_dev_exists = "Error: Device already exists"
 err_dev_not_exists = "Error: Device does not exist"
-
+err_wrong_owner = "Error: This device does not belong to you"
 ### USERS api
 @bp.route('/users', methods=('GET', 'POST', 'PUT', 'DELETE'))
 def api_user():
@@ -113,6 +113,8 @@ def devices_api():
         dev_id = request.args.get('device_id', None, int)
         if dev_id is None: abort(400, "Error: Device ID not provided")
         if not db.check_if_device_exists(dev_id=dev_id): abort(404, err_dev_not_exists)
+        device = db.get_device(dev_id)
+        if device['user_id'] != user_id: abort(401, err_wrong_owner)
 
         if not request.is_json: abort(400, err_json)
         req_data = request.get_json()
@@ -138,6 +140,8 @@ def devices_api():
 
     if request.method == 'GET':
         device_id = request.args.get('device_id', None, int)
+        device = db.get_device(device_id)
+        if device['user_id'] != user_id: abort(401, err_wrong_owner)
 
         if device_id is not None:
             if not db.check_if_device_exists(dev_id=device_id): abort(404, err_dev_not_exists)
@@ -157,6 +161,8 @@ def devices_api():
         device_id = request.args.get('device_id', None, int)
         if device_id is None: abort(400, "Error device ID not provided")
         if not db.check_if_device_exists(dev_id=device_id): abort(404, err_dev_not_exists)
+        device = db.get_device(device_id)
+        if device['user_id'] != user_id: abort(401, err_wrong_owner)
 
         device_name = db.get_device(device_id)['name']
         db.delete_device(device_id)
@@ -173,7 +179,7 @@ def measurements_api():
 
     dev_name = request.args.get('device_name', None, str)
     meas_id = request.args.get('measurement_id', None, int)
-    dev_id = request.args.get('dev_id', None, int)
+    dev_id = request.args.get('device_id', None, int)
     start = request.args.get('start', None, str)
     stop = request.args.get('stop', None, str)
     lim = request.args.get('lim', None, int)
@@ -186,7 +192,7 @@ def measurements_api():
     if dev_id is None:
         dev_id = db.get_dev_id(dev_name, username)
     device = db.get_device(dev_id)
-    if device['user_id'] != user_id: abort(401, "Error: Device does not belong to you!")
+    if device['user_id'] != user_id: abort(401, err_wrong_owner)
 
     if request.method == 'POST':
         if not request.is_json: return err_json, 400
