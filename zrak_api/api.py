@@ -185,6 +185,8 @@ def measurements_api():
         if not db.check_if_device_exists(dev_id=dev_id): abort(404, err_dev_not_exists)
     if dev_id is None:
         dev_id = db.get_dev_id(dev_name, username)
+    device = db.get_device(dev_id)
+    if device['user_id'] != user_id: abort(401, "Error: Device does not belong to you!")
 
     if request.method == 'POST':
         if not request.is_json: return err_json, 400
