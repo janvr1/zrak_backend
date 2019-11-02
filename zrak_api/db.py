@@ -216,7 +216,7 @@ def delete_measurement(meas_id):
 
 def get_last_n_measurements(dev_id, n):
     db = get_db()
-    sql_cmd = "SELECT * FROM measurements WHERE dev_id=? LIMIT ?"
+    sql_cmd = "SELECT * FROM measurements WHERE dev_id=? ORDER BY time DESC LIMIT ?"
     return db.execute(sql_cmd, (dev_id, n)).fetchall()
 
 def get_measurements_range(dev_id, time_start, time_stop):
