@@ -173,13 +173,18 @@ def measurements_api():
 
     dev_name = request.args.get('device_name', None, str)
     meas_id = request.args.get('measurement_id', None, int)
+    dev_id = request.args.get('dev_id', None, int)
     start = request.args.get('start', None, str)
     stop = request.args.get('stop', None, str)
     lim = request.args.get('lim', None, int)
 
-    if dev_name is None: abort(400, "Error: Device name not provided")
-    if not db.check_if_device_exists(dev_name, user_id): abort (404, err_dev_not_exists)
-    dev_id = db.get_dev_id(dev_name, username)
+    if (dev_name is None ) and (dev_id is None): abort(400, "Error: Device id/name not provided")
+    if dev_name is not None:
+        if not db.check_if_device_exists(dev_name, user_id): abort(404, err_dev_not_exists)
+    if dev_id is not None:
+        if not db.check_if_device_exists(dev_id=dev_id): abort(404, err_dev_not_exists)
+    if dev_id is None:
+        dev_id = db.get_dev_id(dev_name, username)
 
     if request.method == 'POST':
         if not request.is_json: return err_json, 400
