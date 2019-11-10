@@ -141,9 +141,9 @@ def devices_api():
     if request.method == 'GET':
         device_id = request.args.get('device_id', None, int)
         device = db.get_device(device_id)
-        if device['user_id'] != user_id: abort(401, err_wrong_owner)
 
         if device_id is not None:
+            if device['user_id'] != user_id: abort(401, err_wrong_owner)
             if not db.check_if_device_exists(dev_id=device_id): abort(404, err_dev_not_exists)
             device_json = get_dev_json(device_id)
             return jsonify(device_json), 200
