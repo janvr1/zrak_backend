@@ -92,7 +92,7 @@ def api_user():
 def devices_api():
     username, password = get_user_pass()
     if not db.check_if_user_exists(username): abort(401, err_user_not_exists)
-    if not db.check_password(username, password): abort(401, err_auth)
+    if not db.check_password(username, password): return err_auth, 401
     user_id = db.get_user_id(username)
     
     if request.method == 'POST':
