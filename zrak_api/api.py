@@ -1,4 +1,4 @@
-from flask import request, Blueprint, jsonify, abort
+from flask import request, Blueprint, jsonify
 from . import db
 import datetime as dt
 
@@ -18,15 +18,15 @@ err_wrong_owner = "Error: This device does not belong to you"
 @bp.route('/users', methods=('GET', 'POST', 'PUT', 'DELETE'))
 def api_user():
     if request.method == 'POST': #create new user
-        if not request.is_json: abort(400, err_json)
+        if not request.is_json: return err_json, 400
         req_data = request.get_json()
 
-        if 'username' not in req_data.keys(): abort(400, "Error: Username not provided")
-        if 'password' not in req_data.keys(): abort(400, "Error: Password not provided")
+        if 'username' not in req_data.keys(): return "Error: Username not provided", 400
+        if 'password' not in req_data.keys(): return "Error: Password not provided", 400
         username = req_data['username']
         password = req_data['password']
         
-        if db.check_if_user_exists(username): abort(409, err_user_exists)
+        if db.check_if_user_exists(username): return err_user_exists, 409
         
         if 'email' in req_data.keys():
             email = req_data['email']
@@ -41,16 +41,16 @@ def api_user():
 
     if request.method == 'PUT': #modify an existing user
         username, password = get_user_pass()
-        if not db.check_if_user_exists(username): abort(401, err_user_not_exists)
+        if not db.check_if_user_exists(username): return err_user_not_exists, 401
         if not db.check_password(username, password): return err_auth, 401
         user_id = db.get_user_id(username)
 
-        if not request.is_json: abort(400, err_json)
+        if not request.is_json: return err_json, 400
         req_data = request.get_json()
 
         if 'username' in req_data.keys():
             username = req_data['username']
-            if db.check_if_user_exists(username): abort(409, err_user_exists)
+            if db.check_if_user_exists(username): return err_user_exists, 409
         else:
             username = None
 
@@ -61,7 +61,7 @@ def api_user():
 
         if 'email' in req_data.keys():
             email = req_data['email']
-            if db.check_if_email_exists(email): abort(409, err_email_exists)
+            if db.check_if_email_exists(email): return err_email_exists, 409
         else:
             email = None
 
@@ -71,16 +71,16 @@ def api_user():
 
     if request.method == 'GET': #get info about an existing user
         username, password = get_user_pass()
-        if not db.check_if_user_exists(username): abort(401, err_user_not_exists)
-        if not db.check_password(username, password): abort(401, err_auth)
+        if not db.check_if_user_exists(username): return err_user_not_exists, 401
+        if not db.check_password(username, password): return err_auth, 401
         user_id = db.get_user_id(username)
         user_json = get_user_json(user_id)
         return jsonify(user_json), 200
 
     if request.method == 'DELETE': #delete an existing user
         username, password = get_user_pass()
-        if not db.check_if_user_exists(username): abort(401, err_user_not_exists)
-        if not db.check_password(username, password): abort(401, err_auth)
+        if not db.check_if_user_exists(username): return err_user_not_exists, 401
+        if not db.check_password(username, password): return err_auth, 401
         user_id = db.get_user_id(username)
         db.delete_user(user_id)
         return f"Success: User '{username}' deleted"
@@ -91,19 +91,19 @@ def api_user():
 @bp.route('/devices', methods=('POST', 'PUT', 'GET', 'DELETE'))
 def devices_api():
     username, password = get_user_pass()
-    if not db.check_if_user_exists(username): abort(401, err_user_not_exists)
+    if not db.check_if_user_exists(username): return err_user_not_exists, 401
     if not db.check_password(username, password): return err_auth, 401
     user_id = db.get_user_id(username)
     
     if request.method == 'POST':
-        if not request.is_json: abort(400, err_json)
+        if not request.is_json: return err_json, 400
         req_data = request.get_json()
         dev_name = req_data['device_name']
         variables = req_data['variables']
         if 'device_location' in req_data.keys(): dev_loc = req_data['device_location']
         else: dev_loc = None
         
-        if db.check_if_device_exists(dev_name, user_id): abort(409, err_dev_exists)
+        if db.check_if_device_exists(dev_name, user_id): return err_dev_exists, 409
         
         device_id = db.new_device(user_id, dev_name, dev_loc, variables)
         #device_id = db.get_dev_id(dev_name, username)
@@ -112,12 +112,12 @@ def devices_api():
     
     if request.method == 'PUT':
         dev_id = request.args.get('device_id', None, int)
-        if dev_id is None: abort(400, "Error: Device ID not provided")
-        if not db.check_if_device_exists(dev_id=dev_id): abort(404, err_dev_not_exists)
+        if dev_id is None: return "Error: Device ID not provided", 400
+        if not db.check_if_device_exists(dev_id=dev_id): return err_dev_not_exists, 404
         device = db.get_device(dev_id)
-        if device['user_id'] != user_id: abort(401, err_wrong_owner)
+        if device['user_id'] != user_id: return err_wrong_owner, 401
 
-        if not request.is_json: abort(400, err_json)
+        if not request.is_json: return err_json, 400
         req_data = request.get_json()
 
         if 'device_name' in req_data.keys():
@@ -133,7 +133,7 @@ def devices_api():
         else:
             dev_loc = None
 
-        if db.check_if_device_exists(dev_name, user_id): abort(409, "Error: Device name already exists")
+        if db.check_if_device_exists(dev_name, user_id): return "Error: Device name already exists", 409
 
         db.edit_device(dev_id, dev_name, dev_loc, variables)
         device_json = get_dev_json(dev_id)
@@ -144,8 +144,8 @@ def devices_api():
         device = db.get_device(device_id)
 
         if device_id is not None:
-            if device['user_id'] != user_id: abort(401, err_wrong_owner)
-            if not db.check_if_device_exists(dev_id=device_id): abort(404, err_dev_not_exists)
+            if device['user_id'] != user_id: return err_wrong_owner, 401
+            if not db.check_if_device_exists(dev_id=device_id): return 404, err_dev_not_exists, 404
             device_json = get_dev_json(device_id)
             return jsonify(device_json), 200
 
@@ -160,10 +160,10 @@ def devices_api():
     if request.method == 'DELETE':
 
         device_id = request.args.get('device_id', None, int)
-        if device_id is None: abort(400, "Error device ID not provided")
-        if not db.check_if_device_exists(dev_id=device_id): abort(404, err_dev_not_exists)
+        if device_id is None: return "Error device ID not provided", 400
+        if not db.check_if_device_exists(dev_id=device_id): return err_dev_not_exists, 404
         device = db.get_device(device_id)
-        if device['user_id'] != user_id: abort(401, err_wrong_owner)
+        if device['user_id'] != user_id: return err_wrong_owner, 401
 
         device_name = db.get_device(device_id)['name']
         db.delete_device(device_id)
@@ -174,8 +174,8 @@ def devices_api():
 @bp.route('/measurements', methods=('POST', 'GET', 'DELETE'))
 def measurements_api():
     username, password = get_user_pass()
-    if not db.check_if_user_exists(username): abort(401, err_user_not_exists)
-    if not db.check_password(username, password): abort(401, err_auth)
+    if not db.check_if_user_exists(username): return err_user_not_exists, 401
+    if not db.check_password(username, password): return err_auth, 401
     user_id = db.get_user_id(username)
 
     dev_name = request.args.get('device_name', None, str)
@@ -185,22 +185,22 @@ def measurements_api():
     stop = request.args.get('stop', None, str)
     lim = request.args.get('lim', None, int)
 
-    if (dev_name is None ) and (dev_id is None): abort(400, "Error: Device id/name not provided")
+    if (dev_name is None ) and (dev_id is None): return "Error: Device id/name not provided", 400
     if dev_name is not None:
-        if not db.check_if_device_exists(dev_name, user_id): abort(404, err_dev_not_exists)
+        if not db.check_if_device_exists(dev_name, user_id): return err_dev_not_exists, 404
     if dev_id is not None:
-        if not db.check_if_device_exists(dev_id=dev_id): abort(404, err_dev_not_exists)
+        if not db.check_if_device_exists(dev_id=dev_id): return err_dev_not_exists, 404
     if dev_id is None:
         dev_id = db.get_dev_id(dev_name, username)
     device = db.get_device(dev_id)
-    if device['user_id'] != user_id: abort(401, err_wrong_owner)
+    if device['user_id'] != user_id: return err_wrong_owner, 401
 
     if request.method == 'POST':
         if not request.is_json: return err_json, 400
         req_data = request.get_json()
         var_list = db.get_device_var_list(dev_id)
         for var in req_data.keys():
-            if var not in var_list: abort(400, f"Error: Variable '{var}' does not exist for device '{dev_name}'")
+            if var not in var_list: return f"Error: Variable '{var}' does not exist for device '{dev_name}'", 400
         meas_id = db.new_measurement(dev_id, req_data)
         measurement = db.get_measurement(meas_id)
         key_to_name_dict = db.var_key_to_name_dict(dev_id)
@@ -208,8 +208,8 @@ def measurements_api():
         return jsonify(meas_json), 200
     
     if request.method == 'DELETE':
-        if meas_id is None: abort(400, "Error: Measurement ID not provided")
-        if not db.check_if_measurement_exists(meas_id): abort(404, "Error: Measurement ID does not exist")
+        if meas_id is None: return "Error: Measurement ID not provided", 400
+        if not db.check_if_measurement_exists(meas_id): return "Error: Measurement ID does not exist", 404
         db.delete_measurement(meas_id)
         return f"Success: Measurement successfully deleted for device '{dev_name}', user '{username}'"
 
