@@ -13,6 +13,7 @@ err_email_exists = "Error: Email already exists"
 err_dev_exists = "Error: Device already exists"
 err_dev_not_exists = "Error: Device does not exist"
 err_wrong_owner = "Error: This device does not belong to you"
+
 ### USERS api
 @bp.route('/users', methods=('GET', 'POST', 'PUT', 'DELETE'))
 def api_user():
@@ -29,7 +30,7 @@ def api_user():
         
         if 'email' in req_data.keys():
             email = req_data['email']
-            if db.check_if_email_exists(email): abort(409, err_email_exists)
+            if db.check_if_email_exists(email): return err_email_exists, 409
         else:
             email = None
         
@@ -41,7 +42,7 @@ def api_user():
     if request.method == 'PUT': #modify an existing user
         username, password = get_user_pass()
         if not db.check_if_user_exists(username): abort(401, err_user_not_exists)
-        if not db.check_password(username, password): abort(401, err_auth)
+        if not db.check_password(username, password): return err_auth, 401
         user_id = db.get_user_id(username)
 
         if not request.is_json: abort(400, err_json)
