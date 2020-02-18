@@ -2,7 +2,7 @@ import sqlite3
 import click
 from flask import current_app, g
 from flask.cli import with_appcontext
-from werkzeug import generate_password_hash, check_password_hash
+from werkzeug.security import generate_password_hash, check_password_hash
 
 ### CORE functions
 
