@@ -195,6 +195,8 @@ def measurements_api():
     device = db.get_device(dev_id)
     if device['user_id'] != user_id: return err_wrong_owner, 401
 
+    dev_name = device['name']
+
     if request.method == 'POST':
         if not request.is_json: return err_json, 400
         req_data = request.get_json()

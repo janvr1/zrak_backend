@@ -1,0 +1,55 @@
+zrak_api
+
+basic authentication for all except /users ['POST']
+/users:
+
+* 'POST' - add a new user
+content-type=application/json
+body: {"username": "janvr",
+       "password": "geslo123",
+       "email": jan@vrhovec.si"}
+* 'PUT' - modify current user
+content-type=application/json
+body: {"username": "janvr",
+       "password": "geslo123",
+       "email": jan@vrhovec.si"}
+* 'GET' - get information about current user
+returns json:
+      {"username": "janvr",
+       "password": "geslo123",
+       "email": jan@vrhovec.si"}
+* 'DELETE' - delete user including all its devices and measurements
+
+no body
+
+/devices:
+* 'POST' -  add a new device
+content-type=applicaton/json
+body: {"device_name": "esp8266",
+       "device_location": "living room",
+       "variables": ["T", "RH", "CO2"]}
+* 'PUT'?dev_id={{device id}} - modify an existing device
+content-type=applicaton/json
+body: {"device_name": "esp8266",
+       "device_location": "living room",
+       "variables": ["T", "RH", "CO2"]}
+* 'GET' - get all devices for current user
+returns json:
+{ 1: {"device_name": "esp8266",
+       "device_location": "living room",
+       "variables": ["T", "RH", "CO2"]},
+  2: {"device_name": "esp32",
+       "device_location": "bedroom",
+       "variables": ["T", "RH", "CO2", "pressure"]}, ... }
+       
+* 'DELETE' - delete the device including all its measurements
+
+/measurements?dev_name=device_name[&?num=10&start=10&?meas_id=measurement_id]
+* 'GET' - 
+/measurements?dev_name=device_name get all measurements for device
+/measurements?dev_name=device_name&?num=10 get last 10 measurements
+/measurements?dev_name=device_name&&start=10&?stop=
+
+* 'POST' - add new measurements
+
+* 'DELETE' - delete measurements with id
