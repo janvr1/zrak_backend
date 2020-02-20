@@ -185,6 +185,14 @@ def measurements_api():
     stop = request.args.get('stop', None, str)
     lim = request.args.get('lim', None, int)
 
+    if request.method == 'DELETE':
+        if meas_id is None: return "Error: Measurement ID not provided", 400
+        if not db.check_if_measurement_exists(meas_id): return "Error: Measurement ID does not exist", 404
+        device_id = db.get_measurement(meas_id)['dev_id']
+        if user_id != db.get_device(device_id)['user_id']: return "Error: This measurement does not belong to you", 401
+        db.delete_measurement(meas_id)
+        return f"Success: Measurement successfully deleted for device '{dev_name}', user '{username}'"
+
     if (dev_name is None ) and (dev_id is None): return "Error: Device id/name not provided", 400
     if dev_name is not None:
         if not db.check_if_device_exists(dev_name, user_id): return err_dev_not_exists, 404
@@ -208,12 +216,6 @@ def measurements_api():
         key_to_name_dict = db.var_key_to_name_dict(dev_id)
         meas_json = get_meas_json(meas_id, key_to_name_dict)
         return jsonify(meas_json), 200
-    
-    if request.method == 'DELETE':
-        if meas_id is None: return "Error: Measurement ID not provided", 400
-        if not db.check_if_measurement_exists(meas_id): return "Error: Measurement ID does not exist", 404
-        db.delete_measurement(meas_id)
-        return f"Success: Measurement successfully deleted for device '{dev_name}', user '{username}'"
 
     if request.method == 'GET':
         if start is not None:
