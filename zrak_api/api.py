@@ -188,10 +188,10 @@ def measurements_api():
     if request.method == 'DELETE':
         if meas_id is None: return "Error: Measurement ID not provided", 400
         if not db.check_if_measurement_exists(meas_id): return "Error: Measurement ID does not exist", 404
-        device_id = db.get_measurement(meas_id)['dev_id']
-        if user_id != db.get_device(device_id)['user_id']: return "Error: This measurement does not belong to you", 401
+        device = db.get_device(db.get_measurement(meas_id)['dev_id'])
+        if user_id != device['user_id']: return "Error: This measurement does not belong to you", 401
         db.delete_measurement(meas_id)
-        return f"Success: Measurement successfully deleted for device '{dev_name}', user '{username}'"
+        return f"Success: Measurement successfully deleted for device '{device['name']}', user '{username}'"
 
     if (dev_name is None ) and (dev_id is None): return "Error: Device id/name not provided", 400
     if dev_name is not None:
