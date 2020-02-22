@@ -4,7 +4,8 @@ from flask import current_app, g
 from flask.cli import with_appcontext
 from werkzeug.security import generate_password_hash, check_password_hash
 
-### CORE functions
+# CORE functions
+
 
 def get_db():
     if 'db' not in g:
@@ -15,10 +16,12 @@ def get_db():
         g.db.row_factory = sqlite3.Row
     return g.db
 
+
 def close_db(e=None):
     db = g.pop('db', None)
     if db is not None:
         db.close()
+
 
 def init_db():
     db = get_db()
@@ -29,6 +32,7 @@ def init_db():
     db.execute(sql_cmd, ("admin", pass_hash, 1))
     db.commit()
 
+
 @click.command('init-db')
 @with_appcontext
 def init_db_command():
@@ -36,12 +40,13 @@ def init_db_command():
     init_db()
     click.echo("Initialized the database")
 
+
 def init_app(app):
     app.teardown_appcontext(close_db)
     app.cli.add_command(init_db_command)
 
 
-### USERS functions
+# USERS functions
 def new_user(username, password, email=None):
     db = get_db()
     password_hash = generate_password_hash(password)
@@ -71,10 +76,11 @@ def edit_user(user_id, username=None, password=None, email=None, user_type=None)
 
 def delete_user(user_id):
     db = get_db()
-    #delete_devices_for_user(user_id)
+    # delete_devices_for_user(user_id)
     sql_cmd = "DELETE FROM users WHERE id=?"
     db.execute(sql_cmd, (user_id, ))
     db.commit()
+
 
 def get_user(id=None, username=None, email=None):
     db = get_db()
@@ -88,10 +94,12 @@ def get_user(id=None, username=None, email=None):
         sql_cmd = "SELECT * FROM users WHERE email=?"
         return db.execute(sql_cmd, (email, )).fetchone()
 
+
 def get_all_users():
     db = get_db()
     sql_cmd = "SELECT * FROM users ORDER BY id"
     return db.execute(sql_cmd).fetchall()
+
 
 def change_password(user_id, new_password):
     db = get_db()
@@ -100,13 +108,16 @@ def change_password(user_id, new_password):
     db.execute(sql_cmd, (pass_hash, user_id))
     db.commit()
 
+
 def change_email(user_id, new_email):
     db = get_db()
     sql_cmd = "UPDATE TABLE users SET email=? WHERE id=?"
     db.execute(sql_cmd, (new_email, user_id))
     db.commit()
 
-### DEVICES functions
+# DEVICES functions
+
+
 def get_device(dev_id=None, dev_name=None, user_id=None):
     db = get_db()
     if dev_id is not None:
@@ -116,6 +127,7 @@ def get_device(dev_id=None, dev_name=None, user_id=None):
         sql_cmd = "SELECT * FROM devices WHERE name=? AND user_id=?"
         return db.execute(sql_cmd, (dev_name, user_id)).fetchone()
 
+
 def get_devices(user_id=None):
     db = get_db()
     if user_id is not None:
@@ -123,6 +135,7 @@ def get_devices(user_id=None):
         return db.execute(sql_cmd, (user_id, )).fetchall()
     sql_cmd = "SELECT * FROM devices ORDER BY name"
     return db.execute(sql_cmd).fetchall()
+
 
 def new_device(user_id, dev_name, dev_location=None, variable_list=None):
     db = get_db()
@@ -133,6 +146,7 @@ def new_device(user_id, dev_name, dev_location=None, variable_list=None):
     cursor = db.execute(sql_cmd, (dev_name, dev_location, user_id, *var_list))
     db.commit()
     return cursor.lastrowid
+
 
 def edit_device(dev_id, dev_name=None, dev_loc=None, variable_list=None):
     db = get_db()
@@ -150,12 +164,14 @@ def edit_device(dev_id, dev_name=None, dev_loc=None, variable_list=None):
         db.execute(sql_cmd, (*var_list, dev_id))
     db.commit()
 
+
 def delete_device(dev_id):
     db = get_db()
-    #delete_measurements_for_device(dev_id)
+    # delete_measurements_for_device(dev_id)
     sql_cmd = "DELETE FROM devices WHERE id=?"
     db.execute(sql_cmd, (dev_id,))
     db.commit()
+
 
 def change_dev_name(dev_id, new_name):
     db = get_db()
@@ -163,11 +179,13 @@ def change_dev_name(dev_id, new_name):
     db.execute(sql_cmd, (new_name, dev_id))
     db.commit()
 
+
 def change_dev_location(dev_id, new_location):
     db = get_db()
     sql_cmd = "UPDATE TABLE devices SET location=? WHERE id=?"
     db.execute(sql_cmd, (new_location, id))
     db.commit()
+
 
 def change_dev_var(dev_id, old_var, new_var):
     db = get_db()
@@ -177,7 +195,9 @@ def change_dev_var(dev_id, old_var, new_var):
     db.execute(sql_cmd, (new_var, dev_id))
     db.commit()
 
-### MEASUREMENTS functions
+# MEASUREMENTS functions
+
+
 def new_measurement(dev_id, data):
     db = get_db()
     device = get_device(dev_id=dev_id)
@@ -194,6 +214,7 @@ def new_measurement(dev_id, data):
     db.commit()
     return row_id
 
+
 def get_measurement(meas_id=None, dev_id=None, time=None):
     db = get_db()
     if meas_id is not None:
@@ -203,10 +224,12 @@ def get_measurement(meas_id=None, dev_id=None, time=None):
         sql_cmd = "SELECT * FROM measurements WHERE dev_id=? AND time=?"
         return db.execute(sql_cmd, (dev_id, time)).fetchone()
 
+
 def get_all_measurements(dev_id):
     db = get_db()
     sql_cmd = "SELECT * FROM measurements WHERE dev_id=?"
     return db.execute(sql_cmd, (dev_id, )).fetchall()
+
 
 def delete_measurement(meas_id):
     db = get_db()
@@ -214,15 +237,18 @@ def delete_measurement(meas_id):
     db.execute(sql_cmd, (meas_id, ))
     db.commit()
 
+
 def get_last_n_measurements(dev_id, n):
     db = get_db()
     sql_cmd = "SELECT * FROM measurements WHERE dev_id=? ORDER BY time DESC LIMIT ?"
     return db.execute(sql_cmd, (dev_id, n)).fetchall()
 
+
 def get_measurements_range(dev_id, time_start, time_stop):
     db = get_db()
     sql_cmd = "SELECT * FROM measurements WHERE dev_id=? AND time>=? AND time<=?"
     return db.execute(sql_cmd, (dev_id, time_start, time_stop)).fetchall()
+
 
 def delete_measurements_range(dev_id, time_start, time_stop):
     db = get_db()
@@ -230,30 +256,36 @@ def delete_measurements_range(dev_id, time_start, time_stop):
     db.execute(sql_cmd, (dev_id, time_start, time_stop))
     db.commit()
 
+
 def get_measurements(dev_id, start=None, stop=None, lim=None):
     db = get_db()
-    if lim is None: lim=-1
-    if start is None: start='-1'
-    if stop is None: stop='3000-01-01 00:00:00'
+    if lim is None:
+        lim = -1
+    if start is None:
+        start = '-1'
+    if stop is None:
+        stop = '3000-01-01 00:00:00'
     sql_cmd = "SELECT * FROM measurements WHERE dev_id=? AND time>=? AND time<=? ORDER BY time DESC LIMIT ?"
     measurements = db.execute(sql_cmd, (dev_id, start, stop, lim)).fetchall()
     return measurements
 
 
-### HELPER functions
+# HELPER functions
 def check_if_user_exists(username):
     if get_user(username=username) is not None:
         return True
     return False
+
 
 def check_if_email_exists(email):
     if get_user(email=email) is not None:
         return True
     return False
 
+
 def check_if_device_exists(dev_name=None, user_id=None, dev_id=None):
     if (dev_name is not None) and (user_id is not None):
-        if get_device(dev_name = dev_name, user_id=user_id) is not None:
+        if get_device(dev_name=dev_name, user_id=user_id) is not None:
             return True
         return False
     if dev_id is not None:
@@ -261,38 +293,49 @@ def check_if_device_exists(dev_name=None, user_id=None, dev_id=None):
             return True
         return False
 
+
 def check_password(username, password):
     user = get_user(username=username)
     return check_password_hash(user['password'], password)
 
+
 def get_user_id(username):
     user = get_user(username=username)
     return user['id']
+
 
 def get_dev_id(dev_name, username):
     user_id = get_user_id(username)
     device = get_device(dev_name=dev_name, user_id=user_id)
     return device['id']
 
+
 def get_var_key(dev_id, var):
     d = var_name_to_key_dict_dict(dev_id)
     return d[var]
 
+
 def var_key_to_name_dict(dev_id):
     db = get_db()
-    device = db.execute("SELECT var0, var1, var2, var3, var4, var5, var6, var7, var8, var9 FROM devices WHERE id=?", (dev_id, )).fetchone()
+    device = db.execute(
+        "SELECT var0, var1, var2, var3, var4, var5, var6, var7, var8, var9 FROM devices WHERE id=?", (dev_id, )).fetchone()
     d = {}
     for key in device.keys():
-        if device[key] is not None: d[key] = device[key]
+        if device[key] is not None:
+            d[key] = device[key]
     return d
+
 
 def var_name_to_key_dict(dev_id):
     db = get_db()
-    device = db.execute("SELECT var0, var1, var2, var3, var4, var5, var6, var7, var8, var9 FROM devices WHERE id=?", (dev_id, )).fetchone()
+    device = db.execute(
+        "SELECT var0, var1, var2, var3, var4, var5, var6, var7, var8, var9 FROM devices WHERE id=?", (dev_id, )).fetchone()
     d = {}
     for idx, name in enumerate(device):
-        if name is not None: d[name] = device.keys()[idx]
+        if name is not None:
+            d[name] = device.keys()[idx]
     return d
+
 
 def delete_devices_for_user(user_id):
     db = get_db()
@@ -302,18 +345,22 @@ def delete_devices_for_user(user_id):
         delete_measurements_for_device(dev_id)
         delete_device(dev_id)
 
+
 def delete_measurements_for_device(dev_id):
     db = get_db()
     sql_cmd = "DELETE FROM measurements WHERE dev_id=?"
     db.execute(sql_cmd, (dev_id, ))
     db.commit()
 
+
 def get_device_var_list(dev_id):
     db = get_db()
     sql_cmd = "SELECT var0, var1, var2, var3, var4, var5, var6, var7, var8, var9 FROM devices WHERE id=?"
     variables = db.execute(sql_cmd, (dev_id, )).fetchone()
-    var_list = [variables[key] for key in variables.keys() if variables[key] is not None]
+    var_list = [variables[key]
+                for key in variables.keys() if variables[key] is not None]
     return var_list
+
 
 def check_if_measurement_exists(meas_id):
     if get_measurement(meas_id) is not None:
