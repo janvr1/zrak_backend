@@ -220,15 +220,41 @@ def measurements_api():
     lim = request.args.get('lim', None, int)
 
     if request.method == 'DELETE':
-        if meas_id is None:
-            return "Error: Measurement ID not provided", 400
-        if not db.check_if_measurement_exists(meas_id):
-            return "Error: Measurement ID does not exist", 404
-        device = db.get_device(db.get_measurement(meas_id)['dev_id'])
-        if user_id != device['user_id']:
-            return "Error: This measurement does not belong to you", 401
-        db.delete_measurement(meas_id)
-        return f"Success: Measurement successfully deleted for device '{device['name']}', user '{username}'"
+        if meas_id is not None:
+            # return "Error: Measurement ID not provided", 400
+            if not db.check_if_measurement_exists(meas_id):
+                return "Error: Measurement ID does not exist", 404
+            device = db.get_device(db.get_measurement(meas_id)['dev_id'])
+            if user_id != device['user_id']:
+                return "Error: This measurement does not belong to you", 401
+            db.delete_measurement(meas_id)
+            return f"Success: Measurement successfully deleted for device '{device['name']}', user '{username}'"
+
+        elif (start is not None) or (stop is not None):
+            if (dev_name is None) and (dev_id is None):
+                return "Error: Device id/name not provided", 400
+            if dev_name is not None:
+                if not db.check_if_device_exists(dev_name, user_id):
+                    return err_dev_not_exists, 404
+            if dev_id is not None:
+                if not db.check_if_device_exists(dev_id=dev_id):
+                    return err_dev_not_exists, 404
+            if dev_id is None:
+                dev_id = db.get_dev_id(dev_name, username)
+            device = db.get_device(dev_id)
+            if device['user_id'] != user_id:
+                return err_wrong_owner, 401
+            if start is not None:
+                start = dt.datetime.strptime(
+                    start, "%Y%m%dT%H%M%S").strftime("%Y-%m-%d %H:%M:%S")
+            if stop is not None:
+                stop = dt.datetime.strptime(
+                    stop, "%Y%m%dT%H%M%S").strftime("%Y-%m-%d %H:%M:%S")
+            db.delete_measurements_range(dev_id, start, stop)
+            return f"Success: Measurements range successfully deleted"
+
+        else:
+            return "Error: Measurement ID or time range not provided", 400
 
     if (dev_name is None) and (dev_id is None):
         return "Error: Device id/name not provided", 400
