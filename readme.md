@@ -18,7 +18,7 @@ Vsi zahtevki potrebujejo avtorizacijsko glavo tipa basic.
 To pomeni, da v glavo zahtevka 'Authorization' vnesemo vrednost 'Basic ' in pa 'username:password' kodirano v sistemu base64.
 Izjema je le zahtevek za ustvarjanje novega uporabnika, kjer se uporabniško ime in geslo vpišeta v telo zahtevka.
 
-Za uporabo strežnika na lastnem račulaniku morate imeti nameščen programski jezik Python 3 in njegove knjižnice [flask](flask.palletsprojects.com), [flask_cors](flask-cors.readthedocs.io), [click](click.palletsprojects.com), in [werkzeug](werkzeug.palletsprojects.com).
+Za uporabo strežnika na lastnem račulaniku morate imeti nameščen programski jezik Python 3 in njegove knjižnice [flask](https://flask.palletsprojects.com), [flask_cors](https://flask-cors.readthedocs.io), [click](https://click.palletsprojects.com), in [werkzeug](https://werkzeug.palletsprojects.com).
 Za zagon strežnika odpremo ukazno vrstico v mapi kjer se nahajajo datotetke tega repozitorija in izvedemo ukaze (velja za Linux OS):
 ```
 $ export FLASK_APP=hello.py
