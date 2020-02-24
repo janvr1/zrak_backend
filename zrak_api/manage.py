@@ -98,7 +98,7 @@ def edit_device(dev_id):
 @bp.route('/measurements/<int:dev_id>')
 @login_required
 def measurements_view(dev_id):
-    measurements = db.get_last_n_measurements(dev_id, 10)
+    measurements = db.get_last_n_measurements(dev_id, 60)
     key_to_name_dict = db.var_key_to_name_dict(dev_id)
     dev_name = db.get_device(dev_id)['name']
     username = db.get_user(db.get_device(dev_id)['user_id'])['username']
