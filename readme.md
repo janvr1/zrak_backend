@@ -397,3 +397,12 @@ Success: Measurement successfully deleted for device 'esp8266', user 'JanezNovak
 ```
 
 Če želimo izbrisati vse meritve na nekem časovnem intervalu lahko to dosežemo z url parametroma start in stop v isti obliki kot je opisano v poglavju zahtevka GET.
+
+
+### Screenshots
+Posnetki zaslona admin vmesnika:\
+![Pregled uporabnikov](./screenshots/users.png)
+![Pregled naprav](./screenshots/devices.png)
+
+Struktura podatkovne baze:\
+![SQL](./screenshots/sql.png)
