@@ -4,7 +4,7 @@
 Projekt IoT platforma je sestavljen iz treh delov - API strežnika, spletne aplikacije in knjižnice za uporabo na mikrokrmilnikih ESP.
 
 Predvidena uporaba je sledeča:\
-Uporabnik si najprej ustvari račun z uporabniškim imenom in geslom, ki se uporabljata za identifikacijo in avtorizacijo pri uporabi API zahtevkov. Nato uporabnik v sistemu ustvari napravo, ki ima svoje ime, lokacijo in spremenljivke. Ta naprava je lahko katerakoli stvar zmožna pošiljanja HTTP zahtevkov. Primer naprave, ki se lahko uporabi je zelo popularen in dostopen mikrokrmilnik ESP8266, ki ima že vgrajeno WiFi povezljivost. Ta naprava lahko nato odčituje razne senzorje in podatke o meritvah z uporabo API klica nalaga na strežnik. Uporabnik do teh meritev lahko dostopa preko spletne aplikacije. Poleg samega pregleda meritev spletna aplikacija omogoča tudi dostop do vseh ostalih funkcionalnosti, ki jih omogoča API, razen nalaganja novih meritev. Dostop do te funkcionalnosti omogoča knjižnica za mikrokrmilnike ESP.
+Uporabnik si najprej ustvari račun z uporabniškim imenom in geslom, ki se uporabljata za identifikacijo in avtorizacijo pri uporabi API zahtevkov. Nato uporabnik v sistemu ustvari napravo, ki ima svoje ime, lokacijo in spremenljivke. Ta naprava je lahko katerakoli stvar zmožna pošiljanja HTTP zahtevkov. Primer naprave, ki se lahko uporabi je zelo popularen in dostopen mikrokrmilnik ESP8266, ki ima že vgrajeno WiFi povezljivost. Ta naprava lahko nato odčituje razne senzorje in podatke o meritvah z uporabo API klica nalaga na strežnik. Uporabnik do teh meritev lahko dostopa preko spletne ali mobilne aplikacije. Poleg samega pregleda meritev spletna aplikacija omogoča tudi dostop do vseh ostalih funkcionalnosti, ki jih omogoča API, razen nalaganja novih meritev. Dostop do te funkcionalnosti omogoča knjižnica za mikrokrmilnike ESP.
 
 
 
@@ -95,7 +95,7 @@ Authorization: Basic SmFuZXpOb3ZhazpnZXNsbzEyMw==
 	"password": "geslo1234"
 }
 ```
-Podatke katere ne želimo spreminjati v zahtevko lahko preprosto izpustimo.
+Podatke katere ne želimo spreminjati lako v zahtevku preprosto izpustimo.
 V primeru, da je bila obdelava zahtevka uspešna strežnik odgovori s kodo 200 in posodobljenimi podatki v telesu odgovora.
 
 Primer odgovora na zgornji zahtevek: 
