@@ -37,4 +37,4 @@ def create_app(test_config=None):
 
 
 def uptime():
-    return subprocess.run(['uptime'], stdout=subprocess.PIPE).stdout.decode('utf-8').strip()
+    return subprocess.run(['/usr/bin/uptime'], stdout=subprocess.PIPE).stdout.decode('utf-8').strip()
