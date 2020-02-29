@@ -1,7 +1,7 @@
 # Projekt IoT platforma
 #### Seminar iz načrtovanja in razvoja programske opreme v telekomunikacijah 2020
 
-Projekt IoT platforma je sestavljen iz treh delov - API strežnika, spletne aplikacije in knjižnice za uporabo na mikrokrmilnikih ESP.
+Projekt IoT platforma je sestavljen iz štirih delov - API strežnika, spletne aplikacije, mobilne aplikacije in knjižnice za uporabo na mikrokrmilnikih ESP.
 
 Predvidena uporaba je sledeča:\
 Uporabnik si najprej ustvari račun z uporabniškim imenom in geslom, ki se uporabljata za identifikacijo in avtorizacijo pri uporabi API zahtevkov. Nato uporabnik v sistemu ustvari napravo, ki ima svoje ime, lokacijo in spremenljivke. Ta naprava je lahko katerakoli stvar zmožna pošiljanja HTTP zahtevkov. Primer naprave, ki se lahko uporabi je zelo popularen in dostopen mikrokrmilnik ESP8266, ki ima že vgrajeno WiFi povezljivost. Ta naprava lahko nato odčituje razne senzorje in podatke o meritvah z uporabo API klica nalaga na strežnik. Uporabnik do teh meritev lahko dostopa preko spletne ali mobilne aplikacije. Poleg samega pregleda meritev spletna aplikacija omogoča tudi dostop do vseh ostalih funkcionalnosti, ki jih omogoča API, razen nalaganja novih meritev. Dostop do te funkcionalnosti omogoča knjižnica za mikrokrmilnike ESP.
