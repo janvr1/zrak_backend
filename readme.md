@@ -109,7 +109,7 @@ Primer odgovora na zgornji zahtevek:
 ```
 
 #### DELETE - izbris uporabika
-Če je uporabnik razočaran na uporabno vrednostjo IoT platforme lahko svoj uporabniški račun izbriše z DELETE zahtevkom.
+Če je uporabnik razočaran nad uporabno vrednostjo IoT platforme lahko svoj uporabniški račun izbriše z DELETE zahtevkom.
 
 Primer izbrisa uporabika:
 ```
