@@ -1,13 +1,5 @@
 # Projekt IoT platforma
 #### Seminar iz načrtovanja in razvoja programske opreme v telekomunikacijah 2020
-
-Projekt IoT platforma je sestavljen iz štirih delov - API strežnika, spletne aplikacije, mobilne aplikacije in knjižnice za uporabo na mikrokrmilnikih ESP.
-
-Predvidena uporaba je sledeča:\
-Uporabnik si najprej ustvari račun z uporabniškim imenom in geslom, ki se uporabljata za identifikacijo in avtorizacijo pri uporabi API zahtevkov. Nato uporabnik v sistemu ustvari napravo, ki ima svoje ime, lokacijo in spremenljivke. Ta naprava je lahko katerakoli stvar zmožna pošiljanja HTTP zahtevkov. Primer naprave, ki se lahko uporabi je zelo popularen in dostopen mikrokrmilnik ESP8266, ki ima že vgrajeno WiFi povezljivost. Ta naprava lahko nato odčituje razne senzorje in podatke o meritvah z uporabo API klica nalaga na strežnik. Uporabnik do teh meritev lahko dostopa preko spletne ali mobilne aplikacije. Poleg samega pregleda meritev spletna aplikacija omogoča tudi dostop do vseh ostalih funkcionalnosti, ki jih omogoča API, razen nalaganja novih meritev. Dostop do te funkcionalnosti omogoča knjižnica za mikrokrmilnike ESP.
-
-
-
 ---
 ## IoT API dokumentacija
 API je razdeljen na 3 dele, ki predstavljajo 3 API endpoint-e. To so /users za upravljanje z uporabniki, /devices za upravljanje z uporabnikovimi napravami in /measurements za uporavljanje z meritvami naprav.
@@ -18,8 +10,7 @@ Vsi zahtevki potrebujejo avtorizacijsko glavo tipa basic.
 To pomeni, da v glavo zahtevka 'Authorization' vnesemo vrednost 'Basic ' in pa 'username:password' kodirano v sistemu base64.
 Izjema je le zahtevek za ustvarjanje novega uporabnika, kjer se uporabniško ime in geslo vpišeta v telo zahtevka.
 
-Za uporabo strežnika na lastnem račulaniku morate imeti nameščen programski jezik Python 3 in njegove knjižnice [flask](https://flask.palletsprojects.com), [flask_cors](https://flask-cors.readthedocs.io), [click](https://click.palletsprojects.com), in [werkzeug](https://werkzeug.palletsprojects.com).
-Za zagon strežnika odpremo ukazno vrstico v mapi kjer se nahajajo datotetke tega repozitorija in izvedemo ukaze (velja za Linux OS):
+Za uporabo strežnika na lastnem račulaniku morate imeti nameščen programski jezik Python 3 in njegove knjižnice [flask](https://flask.palletsprojects.com), [flask_cors](https://flask-cors.readthedocs.io), [click](https://click.palletsprojects.com), in [werkzeug](https://werkzeug.palletsprojects.com). Za zagon strežnika odpremo ukazno vrstico v mapi kjer se nahajajo datotetke tega repozitorija in izvedemo ukaze (velja za Linux OS):
 ```
 $ export FLASK_APP=hello.py
 $ flask init-db
@@ -397,12 +388,3 @@ Success: Measurement successfully deleted for device 'esp8266', user 'JanezNovak
 ```
 
 Če želimo izbrisati vse meritve na nekem časovnem intervalu lahko to dosežemo z url parametroma start in stop v isti obliki kot je opisano v poglavju zahtevka GET.
-
-
-### Screenshots
-Posnetki zaslona admin vmesnika:\
-![Pregled uporabnikov](./screenshots/users.png)
-![Pregled naprav](./screenshots/devices.png)
-
-Struktura podatkovne baze:\
-![SQL](./screenshots/sql.png)
