@@ -1,0 +1,4 @@
+include zrak_api/schema.sql
+graft zrak_api/static
+graft zrak_api/templates
+global-exclude *.pyc
