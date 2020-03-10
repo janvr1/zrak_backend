@@ -1,6 +1,7 @@
 venv_zrak/
 .directory
 
+.idea
 .vscode/
 
 *.pyc
