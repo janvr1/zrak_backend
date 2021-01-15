@@ -7,4 +7,3 @@ Jinja2==2.11.2
 MarkupSafe==1.1.1
 six==1.15.0
 Werkzeug==1.0.1
-Zrak-API @ file:///home/jan/Projects/zrak_backend/Zrak_API-0.1.0-py3-none-any.whl
